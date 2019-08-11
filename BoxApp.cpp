@@ -19,7 +19,11 @@ using namespace DirectX::PackedVector;
 struct Vertex
 {
     XMFLOAT3 Pos;
-    XMFLOAT4 Color;
+	XMFLOAT3 Tangent;
+	XMFLOAT3 Normal;
+	XMFLOAT2 Tex0;
+	XMFLOAT2 Tex1;
+	XMCOLOR Color;
 };
 
 struct ObjectConstants
@@ -359,7 +363,11 @@ void BoxApp::BuildShadersAndInputLayout()
     mInputLayout =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0, 52, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
     };
 }
 
@@ -367,11 +375,11 @@ void BoxApp::BuildBoxGeometry()
 {
     std::array<Vertex, 5> vertices =
     {
-        Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) }),
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) }),
-		Vertex({ XMFLOAT3(0, +1.0f, 0), XMFLOAT4(Colors::Red) })
+        Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
+		Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
+		Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
+		Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
+		Vertex({ XMFLOAT3(0, +1.0f, 0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Red) })
     };
 
 	std::array<std::uint16_t, 18> indices =
