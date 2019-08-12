@@ -209,6 +209,7 @@ void BoxApp::Draw(const GameTimer& gt)
 
 	mCommandList->IASetVertexBuffers(0, 1, &mBoxGeo->VertexBufferView());
 	mCommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
+
     mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     
     mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
@@ -216,7 +217,11 @@ void BoxApp::Draw(const GameTimer& gt)
     mCommandList->DrawIndexedInstanced(
 		mBoxGeo->DrawArgs["box"].IndexCount, 
 		1, 0, 0, 0);
-	
+
+	mCommandList->DrawIndexedInstanced(
+		mBoxGeo->DrawArgs["pyramid"].IndexCount,
+		1, mBoxGeo->DrawArgs["pyramid"].StartIndexLocation, mBoxGeo->DrawArgs["pyramid"].BaseVertexLocation, 0);
+
     // Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
@@ -373,30 +378,59 @@ void BoxApp::BuildShadersAndInputLayout()
 
 void BoxApp::BuildBoxGeometry()
 {
-    std::array<Vertex, 5> vertices =
-    {
-        Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
-		Vertex({ XMFLOAT3(0, +1.0f, 0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Red) })
-    };
-
-	std::array<std::uint16_t, 18> indices =
+	std::array<Vertex, 9> vertices =
 	{
-		0, 1, 3,
-		0, 3, 2,
-		0, 4, 1,
-		1, 4, 3,
-		2, 4, 0,
-		3, 4, 2
+		Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::White) }),
+		Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Black) }),
+		Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Red) }),
+		Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Green) }),
+		Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Blue) }),
+		Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Yellow) }),
+		Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Cyan) }),
+		Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Magenta) }),
+		Vertex({ XMFLOAT3(0, +1.0f, 0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0), XMFLOAT2(0, 0), XMFLOAT2(0, 0), XMCOLOR(Colors::Red) })
+	};
+
+	std::array<std::uint16_t, 54> indices =
+	{
+		// front face
+		0, 1, 2,
+		0, 2, 3,
+
+		// back face
+		4, 6, 5,
+		4, 7, 6,
+
+		// left face
+		4, 5, 1,
+		4, 1, 0,
+
+		// right face
+		3, 2, 6,
+		3, 6, 7,
+
+		// top face
+		1, 5, 6,
+		1, 6, 2,
+
+		// bottom face
+		4, 0, 3,
+		4, 3, 7,
+
+		// piramid
+		0, 3, 7,
+		0, 7, 4,
+		0, 8, 3,
+		3, 8, 7,
+		4, 8, 0,
+		7, 8, 4
 	};
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
 	mBoxGeo = std::make_unique<MeshGeometry>();
-	mBoxGeo->Name = "boxGeo";
+	mBoxGeo->Name = "pyramidGeo";
 
 	ThrowIfFailed(D3DCreateBlob(vbByteSize, &mBoxGeo->VertexBufferCPU));
 	CopyMemory(mBoxGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
@@ -419,8 +453,14 @@ void BoxApp::BuildBoxGeometry()
 	submesh.IndexCount = (UINT)indices.size();
 	submesh.StartIndexLocation = 0;
 	submesh.BaseVertexLocation = 0;
+
+	SubmeshGeometry submesh2;
+	submesh2.IndexCount = (UINT)indices.size();
+	submesh2.StartIndexLocation = 36;
+	submesh2.BaseVertexLocation = 0;
 	
 	mBoxGeo->DrawArgs["box"] = submesh;
+	mBoxGeo->DrawArgs["pyramid"] = submesh2;
 }
 
 void BoxApp::BuildPSO()
@@ -440,6 +480,10 @@ void BoxApp::BuildPSO()
 		mpsByteCode->GetBufferSize() 
 	};
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	
+	psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
