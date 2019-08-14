@@ -450,12 +450,12 @@ void BoxApp::BuildBoxGeometry()
 	mBoxGeo->IndexBufferByteSize = ibByteSize;
 
 	SubmeshGeometry submesh;
-	submesh.IndexCount = (UINT)indices.size();
+	submesh.IndexCount = (UINT)indices.size() - 18;
 	submesh.StartIndexLocation = 0;
 	submesh.BaseVertexLocation = 0;
 
 	SubmeshGeometry submesh2;
-	submesh2.IndexCount = (UINT)indices.size();
+	submesh2.IndexCount = 18;
 	submesh2.StartIndexLocation = 36;
 	submesh2.BaseVertexLocation = 0;
 	
