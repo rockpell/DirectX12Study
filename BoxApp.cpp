@@ -218,9 +218,9 @@ void BoxApp::Draw(const GameTimer& gt)
 		mBoxGeo->DrawArgs["box"].IndexCount, 
 		1, 0, 0, 0);
 
-	mCommandList->DrawIndexedInstanced(
-		mBoxGeo->DrawArgs["pyramid"].IndexCount,
-		1, mBoxGeo->DrawArgs["pyramid"].StartIndexLocation, mBoxGeo->DrawArgs["pyramid"].BaseVertexLocation, 0);
+	//mCommandList->DrawIndexedInstanced(
+	//	mBoxGeo->DrawArgs["pyramid"].IndexCount,
+	//	1, mBoxGeo->DrawArgs["pyramid"].StartIndexLocation, mBoxGeo->DrawArgs["pyramid"].BaseVertexLocation, 0);
 
     // Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
@@ -480,9 +480,8 @@ void BoxApp::BuildPSO()
 		mpsByteCode->GetBufferSize() 
 	};
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	
-	psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	//psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
